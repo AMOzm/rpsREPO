@@ -50,7 +50,7 @@ public class CombatRhythm : MonoBehaviour
             // }
 
             // Output the beat count for debugging
-            Debug.Log(beatCount);
+            //Debug.Log(beatCount);
         }
     }
 

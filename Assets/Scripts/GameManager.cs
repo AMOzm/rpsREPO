@@ -41,6 +41,8 @@ public class GameManager : MonoBehaviour
     private int TiedScount = 0;
     public bool paperTied = false;
     private int TiedPcount = 0;
+    public bool rockTied = false;
+    private int TiedRcount = 0;
     [SerializeField] GameObject indicator;
 
     //audio
@@ -104,6 +106,10 @@ public class GameManager : MonoBehaviour
                     if(paperTied == true){
                         TiedPcount = 1;
                     }
+                    if(rockTied == true){
+                        TiedRcount = 1;
+                    }
+
                 }
                 else{
                     myTurn = false;
@@ -119,6 +125,9 @@ public class GameManager : MonoBehaviour
                     }
                     if(paperTied == true){
                         TiedPcount = 1;
+                    }
+                    if(rockTied == true){
+                        TiedRcount = 1;
                     }
 
                 }
@@ -141,12 +150,16 @@ public class GameManager : MonoBehaviour
                 }
                 PlayerPlayed = false;
                 IPlayed = "none";
-                if(scissorsTied == true && TiedPcount == 1){
+                if(scissorsTied == true && TiedScount == 1){
                     pc.scissors.transform.position = pc.scissorsOriginalPosition;
                     scissorsTied = false;
                     TiedScount = 0;
                 }
                 if(paperTied == true && TiedPcount == 1){
+                    paperTied = false;
+                    TiedPcount = 0;
+                }
+                if(rockTied == true && TiedRcount == 1){
                     paperTied = false;
                     TiedPcount = 0;
                 }
@@ -159,10 +172,13 @@ public class GameManager : MonoBehaviour
                 myTurn = false;
                 ResultText.text = "";
                 PlayerPlayed = false;
+                if(!paperTied){
+                    pc.ResetHandPos();
+                }
                 break;
         }
 
-        Debug.Log("Beat: " + beatCount);
+        //Debug.Log("Beat: " + beatCount);
     }
 
     void Update()
@@ -238,7 +254,17 @@ public class GameManager : MonoBehaviour
     {
         resultsCalled = true;
         Debug.Log("we got here");
-        if ((IPlayed == "rock" && OppPlayed == "scissors") || (IPlayed == "scissors" && OppPlayed == "paper") || (IPlayed == "paper" && OppPlayed == "rock"))
+        if((rockTied && IPlayed != "rock")){
+            myHealth --;
+            rockTied = false;
+            ResultText.text = "Failed to bounce rock back!";
+        }
+        else if((rockTied && IPlayed == "rock")){
+            oppHealth --;
+            rockTied = false;
+            ResultText.text = "Rock bounced back!";
+        }
+        else if ((IPlayed == "rock" && OppPlayed == "scissors") || (IPlayed == "scissors" && OppPlayed == "paper") || (IPlayed == "paper" && OppPlayed == "rock"))
         {
             Debug.Log("we got further");
             oppHealth--;
@@ -268,15 +294,16 @@ public class GameManager : MonoBehaviour
             //PlayerTied = true;
             //change the location of the sprites
             paperTied = true;
-
+            pc.PaperTied();
             ResultText.text = "Tie! Mixing Up the hands!";
         }
-        else if ((IPlayed == "rock" && OppPlayed == "rock"))
+        else if ((IPlayed == "rock" && OppPlayed == "rock") && !rockTied)
         {
             Debug.Log("we got further");
+            rockTied = true;
             //PlayerTied = true;
             //rocks bounce back 
-            ResultText.text = "Tie!";
+            ResultText.text = "Tie! Play Rock Again!";
         }
         else if (IPlayed == "none"){
             ResultText.text = "Failed.";

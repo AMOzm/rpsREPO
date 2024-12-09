@@ -38,6 +38,20 @@ public class OppController : MonoBehaviour
         
     }
     public void PlayCard(){
+        // Check if rockTied is true
+        if (GameManager.Instance.rockTied)
+        {
+            Debug.Log("Playing an extra round with Rock due to rockTied.");
+
+            // Play a "Rock" card without removing it from the pool
+            OppCardInPlay.GetComponent<SpriteRenderer>().color = Color.white;
+            OppCardInPlay.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.rockSprite;
+            GameManager.Instance.OppPlayed = "rock";
+            
+            // Treat this round as an extra round
+            return;
+        }
+        else{
         if (CardPool.Count == 0)
         {
             Debug.Log("Card pool is empty. Refilling from discard pool.");
@@ -69,6 +83,7 @@ public class OppController : MonoBehaviour
                 OppCardInPlay.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.scissorsSprite;
                 GameManager.Instance.OppPlayed = "scissors";
                 break;
+        }
         }
     }
     public void ResetOppCard(){

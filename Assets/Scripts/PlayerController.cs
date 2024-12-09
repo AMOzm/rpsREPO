@@ -17,7 +17,6 @@ public class PlayerController : MonoBehaviour
     public Vector3 scissorsSwapped;
 
     private Vector3 moveUpOffset = new Vector3(0, 2f, 0); // Amount to move up
-    public GameManager gameManager;
     
 
     void Start()
@@ -33,7 +32,9 @@ public class PlayerController : MonoBehaviour
         RockPress();
         PaperPress();
         ScissorsPress();
-        PaperTied();
+        if(GameManager.Instance.scissorsTied == true){
+            scissors.transform.position = scissorsOriginalPosition - moveUpOffset;
+        }
     }
 
     public void RockPress()
@@ -44,7 +45,7 @@ public class PlayerController : MonoBehaviour
             GameManager.Instance.IPlayed = "rock";
             GameManager.Instance.PlayerPlayed = true;
         }
-        else if (Input.GetKeyUp(KeyCode.R))
+        else if (Input.GetKeyUp(KeyCode.R)&& GameManager.Instance.PlayerPlayed)
         {
             rock.transform.position -= moveUpOffset;
         }
@@ -58,7 +59,7 @@ public class PlayerController : MonoBehaviour
             GameManager.Instance.IPlayed = "paper";
             GameManager.Instance.PlayerPlayed = true;
         }
-        else if (Input.GetKeyUp(KeyCode.P))
+        else if (Input.GetKeyUp(KeyCode.P) && GameManager.Instance.PlayerPlayed)
         {
             paper.transform.position -= moveUpOffset;
         }
@@ -66,36 +67,34 @@ public class PlayerController : MonoBehaviour
 
     public void ScissorsPress()
     {
-        if(Input.GetKeyDown(KeyCode.S) && gameManager.scissorsTied == true){
-            scissors.transform.position = scissorsOriginalPosition;
-            return;
-        }
+        // if(Input.GetKeyDown(KeyCode.S) && GameManager.Instance.scissorsTied == true){
+        //     scissors.transform.position = scissorsOriginalPosition - moveUpOffset;
+        //     return;
+        // }
         //if the scissorsTied bool from the game manager is true then return this script
-        else if (Input.GetKeyDown(KeyCode.S) && gameManager.scissorsTied == false)
+        if (Input.GetKeyDown(KeyCode.S) && GameManager.Instance.scissorsTied == false)
         {
             scissors.transform.position += moveUpOffset;
             GameManager.Instance.IPlayed = "scissors";
             GameManager.Instance.PlayerPlayed = true;
         }
-        else if (Input.GetKeyUp(KeyCode.S) && gameManager.scissorsTied == false)
+        else if (Input.GetKeyUp(KeyCode.S) && GameManager.Instance.scissorsTied == false && GameManager.Instance.PlayerPlayed)
         {
             scissors.transform.position -= moveUpOffset;
         }
     }
     public void PaperTied(){
-        if (gameManager.paperTied == true){
             scissors.transform.position = rockOriginalPosition;
-            scissorsSwapped = scissors.transform.position;
+            
             rock.transform.position = paperOriginalPosition;
-            rockSwapped = rock.transform.position;
+            
             paper.transform.position = scissorsOriginalPosition;
-            paperSwapped = paper.transform.position;
-        }
-        else if (gameManager.paperTied == false){
+            
+    }
+    public void ResetHandPos(){
             rock.transform.position = rockOriginalPosition;
             paper.transform.position = paperOriginalPosition;
             scissors.transform.position = scissorsOriginalPosition;
-        }
     }
 
     public void Combat()
