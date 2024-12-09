@@ -295,4 +295,5 @@ public class GameManager : MonoBehaviour
         MyHealthText.text = myHealth.ToString();
         OppHealthText.text = oppHealth.ToString();
     }
+    //demonstration
 }
