@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]private string sceneName;
     [SerializeField] private OppController oc;
     [SerializeField] private PlayerController pc;
+    [SerializeField] private Animator faceAnimator;
     public bool scissorsTied = false;
     private int TiedScount = 0;
     public bool paperTied = false;
@@ -52,6 +53,7 @@ public class GameManager : MonoBehaviour
     private int PrepPhase = 0;
     [SerializeField] private int StartAt;
     private bool PlayStarted;
+
 
     void Awake()
     {
@@ -79,6 +81,9 @@ public class GameManager : MonoBehaviour
 
         float interval = 60f / bpm;
         InvokeRepeating("PlayBeat", interval, interval);
+        faceAnimator.SetBool("ifTie", false);
+        faceAnimator.SetBool("ifLose", false);
+        faceAnimator.SetBool("ifWin", false);
         Metronome.Play();
         BGMSong.Play();
     }
@@ -190,6 +195,9 @@ public class GameManager : MonoBehaviour
                 if(!PlayStarted){
                         PrepPhase ++;
                 }
+                faceAnimator.SetBool("ifTie", false);
+                faceAnimator.SetBool("ifLose", false);
+                faceAnimator.SetBool("ifWin", false);
                 break;
             default:
                 if(PlayStarted){
@@ -232,6 +240,9 @@ public class GameManager : MonoBehaviour
         }
         if(!myTurn && PlayerPlayed){
             ResultText.text = "Not Good!";
+        }
+        if(myHealth <= 0 || oppHealth <= 0){
+            SceneManager.LoadScene("sceneName");
         }
     }
     void LossStateCheck(){
@@ -289,17 +300,20 @@ public class GameManager : MonoBehaviour
         if((rockTied && IPlayed != "rock")){
             myHealth --;
             rockTied = false;
+            faceAnimator.SetBool("ifLose", true);
             ResultText.text = "Failed to bounce rock back!";
         }
         else if((rockTied && IPlayed == "rock")){
             oppHealth --;
             rockTied = false;
+            faceAnimator.SetBool("ifWin", true);
             ResultText.text = "Rock bounced back!";
         }
         else if ((IPlayed == "rock" && OppPlayed == "scissors") || (IPlayed == "scissors" && OppPlayed == "paper") || (IPlayed == "paper" && OppPlayed == "rock"))
         {
             Debug.Log("we got further");
             oppHealth--;
+            faceAnimator.SetBool("ifWin", true);
             //PlayerSuccess = true;
             ResultText.text = "Win!";
         }
@@ -307,6 +321,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("we got further");
             myHealth--;
+            faceAnimator.SetBool("ifLose", true);
             //PlayerFail = true;
             ResultText.text = "Lose!";
         }
@@ -314,6 +329,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("we got further");
             //PlayerTied = true;
+            faceAnimator.SetBool("ifTie", true);
             scissorsTied = true;
 
             //deactivate scissors next round. Maybe make a boolean that says
@@ -325,6 +341,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("we got further");
             //PlayerTied = true;
             //change the location of the sprites
+            faceAnimator.SetBool("ifTie", true);
             paperTied = true;
             pc.PaperTied();
             ResultText.text = "Tie! Mixing Up the hands!";
@@ -332,6 +349,7 @@ public class GameManager : MonoBehaviour
         else if ((IPlayed == "rock" && OppPlayed == "rock") && !rockTied)
         {
             Debug.Log("we got further");
+            faceAnimator.SetBool("ifTie", true);
             rockTied = true;
             //PlayerTied = true;
             //rocks bounce back 
@@ -339,6 +357,7 @@ public class GameManager : MonoBehaviour
         }
         else if (IPlayed == "none"){
             ResultText.text = "Failed.";
+            faceAnimator.SetBool("ifLose", true);
             myHealth --;
         }
 
