@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 
@@ -19,8 +20,8 @@ public class GameManager : MonoBehaviour
     public int myHealth;
     public int OppMaxHealth;
     public int oppHealth;
-    public TextMeshProUGUI MyHealthText;
-    public TextMeshProUGUI OppHealthText;
+    public Slider MyHealthSlider; // Player health slider
+    public Slider OppHealthSlider; // Opponent health slider
     public TextMeshProUGUI ResultText;
 
     // Rhythm System
@@ -47,6 +48,10 @@ public class GameManager : MonoBehaviour
 
     //audio
     [SerializeField] private AudioSource Metronome;
+    [SerializeField] private AudioSource BGMSong;
+    private int PrepPhase = 0;
+    [SerializeField] private int StartAt;
+    private bool PlayStarted;
 
     void Awake()
     {
@@ -66,9 +71,16 @@ public class GameManager : MonoBehaviour
         ResultText.text = "";
         myHealth = MyMaxHealth;
         oppHealth = OppMaxHealth;
+        // Initialize sliders
+        MyHealthSlider.maxValue = MyMaxHealth;
+        MyHealthSlider.value = myHealth;
+        OppHealthSlider.maxValue = OppMaxHealth;
+        OppHealthSlider.value = oppHealth;
+
         float interval = 60f / bpm;
         InvokeRepeating("PlayBeat", interval, interval);
         Metronome.Play();
+        BGMSong.Play();
     }
 
     void PlayBeat()
@@ -86,94 +98,111 @@ public class GameManager : MonoBehaviour
         {
             case 1:
                 //rockSprite.rotation = Quaternion.Euler(0, 0, -5); Is this were I should rotate the sprites in an animation?
-                myTurn = false;
-                PlayerPlayed = false;
-                IPlayed = "none";
-                EnemyPOne();
+                if(PlayStarted){
+                    myTurn = false;
+                    PlayerPlayed = false;
+                    IPlayed = "none";
+                    EnemyPOne();
+                }
                 break;
             case 2:
-                myTurn = false;
-                PlayerPlayed = false;
-                IPlayed = "none";
-                EnemyPTwo();
+                if(PlayStarted){
+                    myTurn = false;
+                    PlayerPlayed = false;
+                    IPlayed = "none";
+                    EnemyPTwo();
+                }
                 break;
             case 3:
-                if(PlayOnOne){
-                    myTurn = true;
-                    if(scissorsTied == true){
-                        TiedScount = 1;
-                    }
-                    if(paperTied == true){
-                        TiedPcount = 1;
-                    }
-                    if(rockTied == true){
-                        TiedRcount = 1;
-                    }
+                if(PlayStarted){
+                    if(PlayOnOne){
+                        myTurn = true;
+                        if(scissorsTied == true){
+                            TiedScount = 1;
+                        }
+                        if(paperTied == true){
+                            TiedPcount = 1;
+                        }
+                        if(rockTied == true){
+                            TiedRcount = 1;
+                        }
 
+                    }
+                    else{
+                        myTurn = false;
+                    }
+                    PlayerPlayed = false;
+                    IPlayed = "none";
                 }
-                else{
-                    myTurn = false;
-                }
-                PlayerPlayed = false;
-                IPlayed = "none";
                 break;
             case 4:
-                if(!PlayOnOne){
-                    myTurn = true;
-                    if(scissorsTied == true){
-                        TiedScount = 1;
-                    }
-                    if(paperTied == true){
-                        TiedPcount = 1;
-                    }
-                    if(rockTied == true){
-                        TiedRcount = 1;
-                    }
+                if(PlayStarted){
+                    if(!PlayOnOne){
+                        myTurn = true;
+                        if(scissorsTied == true){
+                            TiedScount = 1;
+                        }
+                        if(paperTied == true){
+                            TiedPcount = 1;
+                        }
+                        if(rockTied == true){
+                            TiedRcount = 1;
+                        }
 
-                }
-                else{
-                    myTurn = false;
-                    if(IPlayed == "none"){
-                        ResultText.text = "Failed to Play.";
-                        myHealth --;
                     }
+                    else{
+                        myTurn = false;
+                        if(IPlayed == "none"){
+                            ResultText.text = "Failed to Play.";
+                            myHealth --;
+                        }
+                    }
+                    PlayerPlayed = false;
+                    IPlayed = "none";
                 }
-                PlayerPlayed = false;
-                IPlayed = "none";
                 break;
             case 5:
-                if(!PlayOnOne){
-                    if(IPlayed == "none"){
-                        ResultText.text = "Failed to Play.";
-                        myHealth --;
+                if(PlayStarted){
+                    if(!PlayOnOne){
+                        if(IPlayed == "none"){
+                            ResultText.text = "Failed to Play.";
+                            myHealth --;
+                        }
+                    }
+                    PlayerPlayed = false;
+                    IPlayed = "none";
+                    if(scissorsTied == true && TiedScount == 1){
+                        pc.scissors.transform.position = pc.scissorsOriginalPosition;
+                        scissorsTied = false;
+                        TiedScount = 0;
+                    }
+                    if(paperTied == true && TiedPcount == 1){
+                        paperTied = false;
+                        TiedPcount = 0;
+                    }
+                    if(rockTied == true && TiedRcount == 1){
+                        paperTied = false;
+                        TiedPcount = 0;
                     }
                 }
-                PlayerPlayed = false;
-                IPlayed = "none";
-                if(scissorsTied == true && TiedScount == 1){
-                    pc.scissors.transform.position = pc.scissorsOriginalPosition;
-                    scissorsTied = false;
-                    TiedScount = 0;
-                }
-                if(paperTied == true && TiedPcount == 1){
-                    paperTied = false;
-                    TiedPcount = 0;
-                }
-                if(rockTied == true && TiedRcount == 1){
-                    paperTied = false;
-                    TiedPcount = 0;
+                break;
+            case 8:
+                if(!PlayStarted){
+                        PrepPhase ++;
                 }
                 break;
             default:
-                IPlayed = "none";
-                OppPlayed = "none";
-                resultsCalled = false;
-                oc.ResetOppCard();
-                myTurn = false;
-                ResultText.text = "";
-                PlayerPlayed = false;
-                if(!paperTied){
-                    pc.ResetHandPos();
+                if(PlayStarted){
+                    IPlayed = "none";
+                    OppPlayed = "none";
+                    resultsCalled = false;
+                    oc.ResetOppCard();
+                    myTurn = false;
+                    ResultText.text = "";
+                    PlayerPlayed = false;
+                    if(!paperTied){
+                        pc.ResetHandPos();
+                    }
                 }
                 break;
         }
@@ -183,6 +212,9 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        if(PrepPhase == StartAt){
+            PlayStarted = true;
+        }
         Scene currentScene = SceneManager.GetActiveScene();
         sceneName = currentScene.name;
         UpdateHealthText();
@@ -319,8 +351,8 @@ public class GameManager : MonoBehaviour
 
     public void UpdateHealthText()
     {
-        MyHealthText.text = myHealth.ToString();
-        OppHealthText.text = oppHealth.ToString();
+        MyHealthSlider.value = myHealth;
+        OppHealthSlider.value = oppHealth;
     }
     //demonstration
 }

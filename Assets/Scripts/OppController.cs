@@ -44,7 +44,7 @@ public class OppController : MonoBehaviour
             Debug.Log("Playing an extra round with Rock due to rockTied.");
 
             // Play a "Rock" card without removing it from the pool
-            OppCardInPlay.GetComponent<SpriteRenderer>().color = Color.white;
+            OppCardInPlay.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
             OppCardInPlay.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.rockSprite;
             GameManager.Instance.OppPlayed = "rock";
             
@@ -69,17 +69,17 @@ public class OppController : MonoBehaviour
         switch (randomCard)
         {
             case "Rock":
-                OppCardInPlay.GetComponent<SpriteRenderer>().color = Color.white;
+                OppCardInPlay.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
                 OppCardInPlay.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.rockSprite;
                 GameManager.Instance.OppPlayed = "rock";
                 break;
             case "Paper":
-                OppCardInPlay.GetComponent<SpriteRenderer>().color = Color.white;
+                OppCardInPlay.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
                 OppCardInPlay.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.paperSprite;
                 GameManager.Instance.OppPlayed = "paper";
                 break;
             case "Scissors":
-                OppCardInPlay.GetComponent<SpriteRenderer>().color = Color.white;
+                OppCardInPlay.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
                 OppCardInPlay.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.scissorsSprite;
                 GameManager.Instance.OppPlayed = "scissors";
                 break;
@@ -87,7 +87,7 @@ public class OppController : MonoBehaviour
         }
     }
     public void ResetOppCard(){
-        OppCardInPlay.GetComponent<SpriteRenderer>().color = Color.black;
+        OppCardInPlay.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
     }
     // Refills CardPool with 8 of each card type
     private void FillOppCardPool()

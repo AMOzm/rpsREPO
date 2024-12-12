@@ -41,6 +41,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: background
+    uniqueID: 2412410087
+    locked: 0
+  - name: opphand
+    uniqueID: 2243880085
+    locked: 0
   - name: myhand
     uniqueID: 2643795075
+    locked: 0
+  - name: face
+    uniqueID: 3745256871
     locked: 0
